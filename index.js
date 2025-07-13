@@ -7,46 +7,44 @@ const client = new Client({
 
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
-    console.log('Scan QR Code...');
+    console.log('Scan QR code untuk login...');
 });
 
 client.on('ready', async () => {
-    console.log('Client is ready!');
+    console.log('Client siap digunakan.');
 
-    // Ganti dengan nama grup yang sesuai persis
-    const groupName = "Nama Grup Kamu";
+    // ID grup tujuan
+    const groupId = "120363405726993984@g.us";
 
-    // Cari grup dengan nama
-    const chats = await client.getChats();
-    const group = chats.find(chat => chat.isGroup && chat.name === groupName);
-
-    if (!group) {
-        console.log("Grup tidak ditemukan.");
-        return;
-    }
-
+    // Hitung waktu sekarang hingga jam 07:00 pagi
     const now = new Date();
     const target = new Date();
 
-    target.setHours(7, 0, 0, 0); // jam 07:00 pagi
+    target.setHours(7, 0, 0, 0); // Set jam 7 pagi
 
-    // Jika sudah lewat jam 7, targetnya besok
+    // Jika waktu sekarang sudah lewat jam 7, target adalah jam 7 besok
     if (now >= target) {
         target.setDate(target.getDate() + 1);
     }
 
-    const ms = target - now;
-    const totalMinutes = Math.floor(ms / 60000);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+    const selisihMs = target - now;
+    const totalMenit = Math.floor(selisihMs / 60000);
+    const jam = Math.floor(totalMenit / 60);
+    const menit = totalMenit % 60;
 
-    const waktuStr =
-        (hours > 0 ? `${hours} jam ` : "") +
-        (minutes > 0 ? `${minutes} menit ` : "") +
+    // Buat pesan
+    const pesan =
+        (jam > 0 ? `${jam} jam ` : "") +
+        (menit > 0 ? `${menit} menit ` : "") +
         "lagi sekolah";
 
-    await client.sendMessage(group.id._serialized, waktuStr);
-    console.log("Pesan terkirim:", waktuStr);
+    try {
+        await client.sendMessage(groupId, pesan);
+        console.log("Pesan terkirim:", pesan);
+    } catch (err) {
+        console.error("Gagal mengirim pesan:", err);
+    }
 });
 
 client.initialize();
+
