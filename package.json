@@ -1,0 +1,15 @@
+{
+  "name": "whatsapp-group-listener",
+  "version": "1.0.0",
+  "description": "Bot WhatsApp untuk melihat pesan dan ID grup",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Haiter YT",
+  "license": "MIT",
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.23.0"
+  }
+}
