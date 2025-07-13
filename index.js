@@ -10,41 +10,49 @@ client.on('qr', qr => {
     console.log('Scan QR code untuk login...');
 });
 
-client.on('ready', async () => {
+client.on('ready', () => {
     console.log('Client siap digunakan.');
 
-    // ID grup tujuan
     const groupId = "120363405726993984@g.us";
 
-    // Hitung waktu sekarang hingga jam 07:00 pagi
-    const now = new Date();
-    const target = new Date();
+    const kirimPesanTiapMenit = async () => {
+        const now = new Date();
+        const target = new Date();
+        target.setHours(7, 0, 0, 0); // jam 07:00 pagi
 
-    target.setHours(7, 0, 0, 0); // Set jam 7 pagi
+        // Kalau sudah lewat jam 07:00, hentikan pengiriman
+        if (now >= target) {
+            console.log("Sudah lewat jam 07:00. Bot berhenti mengirim pesan.");
+            clearInterval(interval); // hentikan pengulangan
+            return;
+        }
 
-    // Jika waktu sekarang sudah lewat jam 7, target adalah jam 7 besok
-    if (now >= target) {
-        target.setDate(target.getDate() + 1);
-    }
+        const selisihMs = target - now;
+        const totalMenit = Math.floor(selisihMs / 60000);
+        const jam = Math.floor(totalMenit / 60);
+        const menit = totalMenit % 60;
 
-    const selisihMs = target - now;
-    const totalMenit = Math.floor(selisihMs / 60000);
-    const jam = Math.floor(totalMenit / 60);
-    const menit = totalMenit % 60;
+        const pesan =
+            (jam > 0 ? `${jam} jam ` : "") +
+            (menit > 0 ? `${menit} menit ` : "") +
+            "lagi sekolah";
 
-    // Buat pesan
-    const pesan =
-        (jam > 0 ? `${jam} jam ` : "") +
-        (menit > 0 ? `${menit} menit ` : "") +
-        "lagi sekolah";
+        try {
+            await client.sendMessage(groupId, pesan);
+            console.log("Pesan terkirim:", pesan);
+        } catch (err) {
+            console.error("Gagal mengirim pesan:", err);
+        }
+    };
 
-    try {
-        await client.sendMessage(groupId, pesan);
-        console.log("Pesan terkirim:", pesan);
-    } catch (err) {
-        console.error("Gagal mengirim pesan:", err);
-    }
+    // Kirim pertama kali saat bot siap
+    kirimPesanTiapMenit();
+
+    // Kirim ulang setiap 1 menit
+    interval = setInterval(kirimPesanTiapMenit, 60 * 1000);
 });
 
+let interval;
 client.initialize();
+
 
